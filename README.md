@@ -1,111 +1,161 @@
 # FileAtlas
 
-FileAtlas is a local file indexer with CLI and HTTP API access.
+FileAtlas is a local-first file indexer and search engine for personal workspaces.
+It scans selected folders, builds an inverted index, and exposes both a CLI and a local HTTP API so tools and agents can find files quickly.
 
-## Features
+## Why This Project Exists
 
-- Recursive scan with incremental re-indexing
-- Ranked search using token match, labels, and recency
-- Content indexing is **off by default** until explicitly enabled
-- Provider configuration supports multiple endpoints/models
-- Local HTTP API for agent integrations
-- Agent-created files can be registered and indexed immediately
+Desktop search is often either too shallow (filename-only) or too heavy (cloud sync, background daemons, complicated setup).
+FileAtlas keeps the workflow simple:
+
+- run on your machine
+- choose scan roots explicitly
+- keep content indexing opt-in
+- expose clean interfaces for automation
+
+## Core Features
+
+- Parallel recursive scanning with incremental re-indexing
+- Ranked retrieval with token, label, recency, and path boosts
+- Content indexing disabled by default until you enable it
+- Local API for external tools (`/v1/find`, `/v1/scan`, `/v1/register-created`)
+- Agent-created file registration and audit log
+- Configurable provider metadata for model-driven workflows
 
 ## Install
 
+### Option 1: Build and install locally
+
 ```bash
-cd /Users/kevin/fileatlas
+git clone https://github.com/Meinianda-L/fileatlas.git
+cd fileatlas
 ./scripts/install.sh
 ```
 
-If `fileatlas` is not found, add:
+### Option 2: Build without installing
+
+```bash
+go build -o ./bin/fileatlas ./cmd/fileatlas
+./bin/fileatlas help
+```
+
+If `fileatlas` is not found after install, add this to your shell profile:
 
 ```bash
 export PATH="$HOME/.local/bin:$PATH"
 ```
 
-## First Run
+## Quick Start
 
 ```bash
 fileatlas init
+fileatlas scan
+fileatlas find "meeting notes"
 ```
 
-`init` asks for:
+`init` walks through:
 
-1. Provider configuration
-2. Content indexing permission
-3. Scan scope (`home` or selected roots)
-4. Initial index build
+1. provider setup (name, endpoint, model, API key env name)
+2. content indexing permission
+3. scan scope (home directory or custom roots)
+4. initial index build
 
-## Commands
+## CLI Reference
 
 ```bash
 fileatlas init
 fileatlas scan [--all] [--roots /a,/b]
 fileatlas find [--limit 20] <query>
-fileatlas register-created --path <file> --agent <name> [--share full]
+fileatlas register-created --path <file> --agent <name> [--share private|summary|full]
 fileatlas serve [--addr 127.0.0.1:4819]
 fileatlas status
 fileatlas content on|off
 ```
 
-## Search Example
+## API Reference
 
-```bash
-fileatlas find "toefl speaking timer"
-```
-
-## API
-
-Start server:
+Start the local API server:
 
 ```bash
 fileatlas serve
 ```
 
-Endpoints:
+### `GET /v1/health`
+Returns service health.
 
-- `GET /v1/health`
-- `GET /v1/status`
-- `POST /v1/find` with `{ "query": "toefl timer", "limit": 10 }`
-- `POST /v1/scan` with `{ "all": true }` or `{ "roots": ["/Users/kevin/Documents"] }`
-- `POST /v1/register-created` with `{ "path": "...", "agent": "openclaw", "share": "full" }`
+### `GET /v1/status`
+Returns current config summary and index stats.
 
-## Integration Scripts (OpenClaw)
+### `POST /v1/find`
+Request body:
+
+```json
+{ "query": "invoice april", "limit": 10 }
+```
+
+### `POST /v1/scan`
+Request body examples:
+
+```json
+{ "all": true }
+```
+
+```json
+{ "roots": ["/Users/alex/Documents"] }
+```
+
+### `POST /v1/register-created`
+Request body:
+
+```json
+{ "path": "/abs/path/file.md", "agent": "openclaw", "share": "full" }
+```
+
+## OpenClaw Integration
+
+Included scripts:
 
 - `integrations/openclaw/find_file.sh`
 - `integrations/openclaw/register_created.sh`
+- `scripts/agent_write.sh`
 
-## Register Agent-Created Files
+The skill contract for linked agents is documented in `skills/openclaw-fileatlas-skill.md`.
 
-Direct call:
+## Data Layout
+
+By default, data is stored in `~/.fileatlas` (or `$FILEATLAS_HOME`):
+
+- `config.json` - runtime config
+- `files.json` - current file records
+- `inverted.json` - token to file-id map
+- `agent_created.jsonl` - append-only agent write log
+
+## Privacy and Safety Defaults
+
+- No file deletion or modification during scan/search
+- No automatic web uploads in indexing/search code paths
+- Content read disabled until explicitly enabled
+- Full-home scan requires confirmation in CLI
+
+## Algorithms
+
+See `docs/ALGORITHMS.md` for indexing and ranking details.
+
+## Development
 
 ```bash
-fileatlas register-created --path /abs/path/file.md --agent openclaw --share full
+go fmt ./...
+go test ./...
+go build ./cmd/fileatlas
 ```
 
-Wrapper:
+## Roadmap
 
-```bash
-echo "content" | ./scripts/agent_write.sh openclaw /tmp/demo.md full
-```
+- File watcher mode for near-real-time index refresh
+- Optional SQLite backend for larger datasets
+- More tool adapters beyond OpenClaw
+- Optional interactive TUI for browsing results
 
-## Data Files
+## License
 
-Stored in `~/.fileatlas` (or `$FILEATLAS_HOME`):
-
-- `config.json`
-- `files.json`
-- `inverted.json`
-- `agent_created.jsonl`
-
-## Safety Defaults
-
-- No file move/delete actions
-- No network upload built into scan/search path
-- Content indexing disabled until confirmed
-- Full-home scan requires explicit confirmation
-
-## Internals
-
-- Ranking/indexing details: `docs/ALGORITHMS.md`
+MIT

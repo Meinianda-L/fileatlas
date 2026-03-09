@@ -7,7 +7,6 @@ import (
 	"fmt"
 	"os"
 	"path/filepath"
-	"strconv"
 	"strings"
 
 	"fileatlas/internal/api"
@@ -49,16 +48,25 @@ func Run(args []string) error {
 
 func printHelp() {
 	fmt.Println("FileAtlas")
-	fmt.Println("Local file index and search")
+	fmt.Println("Fast local index and search for your files")
+	fmt.Println("")
+	fmt.Println("Usage:")
+	fmt.Println("  fileatlas <command> [flags]")
 	fmt.Println("")
 	fmt.Println("Commands:")
+	fmt.Println("  init             Interactive setup (providers, privacy, roots)")
+	fmt.Println("  scan             Build or refresh the index")
+	fmt.Println("  find             Search indexed files by keywords")
+	fmt.Println("  register-created Register a file written by an agent/tool")
+	fmt.Println("  serve            Start the local HTTP API")
+	fmt.Println("  status           Show config and index summary")
+	fmt.Println("  content          Toggle content indexing (on|off)")
+	fmt.Println("")
+	fmt.Println("Examples:")
 	fmt.Println("  fileatlas init")
-	fmt.Println("  fileatlas scan [--all] [--roots /a,/b]")
-	fmt.Println("  fileatlas find [--limit 20] <query>")
-	fmt.Println("  fileatlas register-created --path <file> --agent <name> [--share full]")
-	fmt.Println("  fileatlas serve [--addr 127.0.0.1:4819]")
-	fmt.Println("  fileatlas status")
-	fmt.Println("  fileatlas content on|off")
+	fmt.Println("  fileatlas scan --roots ~/Documents,~/Desktop")
+	fmt.Println("  fileatlas find \"quarterly budget\"")
+	fmt.Println("  fileatlas register-created --path /tmp/notes.md --agent openclaw --share full")
 }
 
 func runInit() error {
@@ -186,6 +194,9 @@ func runScan(args []string) error {
 	if strings.TrimSpace(*rootsCSV) != "" {
 		roots = parseRoots(*rootsCSV)
 	}
+	if len(roots) == 0 {
+		return errors.New("no scan roots configured; run `fileatlas init` or pass --roots")
+	}
 
 	stats, total, err := core.RunAndPersistScan(cfg, roots)
 	if err != nil {
@@ -227,6 +238,10 @@ func runFind(args []string) error {
 	records, err := store.LoadRecords()
 	if err != nil {
 		return err
+	}
+	if len(records) == 0 {
+		fmt.Println("Index is empty. Run `fileatlas scan` first.")
+		return nil
 	}
 	idx, err := store.LoadInverted()
 	if err != nil {
@@ -287,7 +302,11 @@ func runStatus() error {
 	if err != nil {
 		return err
 	}
+	home, _ := config.HomeDir()
+	cfgPath, _ := config.ConfigPath()
 	fmt.Println("FileAtlas status")
+	fmt.Printf("  config: %s\n", cfgPath)
+	fmt.Printf("  data dir: %s\n", home)
 	fmt.Printf("  roots: %s\n", strings.Join(cfg.ScanRoots, ", "))
 	fmt.Printf("  content_read_enabled: %v\n", cfg.ContentReadEnabled)
 	fmt.Printf("  providers: %d active=%s\n", len(cfg.Providers), cfg.ActiveProvider)
@@ -314,7 +333,7 @@ func runContent(args []string) error {
 	if err := config.Save(cfg); err != nil {
 		return err
 	}
-	fmt.Printf("content_read_enabled set to %v\n", cfg.ContentReadEnabled)
+	fmt.Printf("Content indexing set to %v\n", cfg.ContentReadEnabled)
 	return nil
 }
 
@@ -381,12 +400,4 @@ func trimDisplay(s string, max int) string {
 		return s
 	}
 	return s[:max-3] + "..."
-}
-
-func atoiOrDefault(v string, d int) int {
-	n, err := strconv.Atoi(v)
-	if err != nil {
-		return d
-	}
-	return n
 }

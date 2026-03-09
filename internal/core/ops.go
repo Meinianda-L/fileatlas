@@ -37,8 +37,9 @@ func RegisterCreatedFile(cfg config.Config, path, agent, share string) (store.Fi
 	if agent == "" {
 		agent = "unknown"
 	}
-	if share == "" {
-		share = "full"
+	shareMode, err := normalizeShareMode(share)
+	if err != nil {
+		return store.FileRecord{}, err
 	}
 	path = util.NormalizePath(path)
 	fi, err := os.Stat(path)
@@ -63,7 +64,7 @@ func RegisterCreatedFile(cfg config.Config, path, agent, share string) (store.Fi
 		Ext:         strings.ToLower(filepath.Ext(path)),
 		Size:        sz,
 		ModUnix:     mod,
-		ShareMode:   share,
+		ShareMode:   shareMode,
 		AgentSource: agent,
 		IndexedAt:   time.Now().Unix(),
 	}
@@ -95,8 +96,21 @@ func RegisterCreatedFile(cfg config.Config, path, agent, share string) (store.Fi
 	if err := store.SaveInverted(store.BuildInverted(records)); err != nil {
 		return store.FileRecord{}, err
 	}
-	if err := store.RecordAgentCreated(path, agent, share); err != nil {
+	if err := store.RecordAgentCreated(path, agent, shareMode); err != nil {
 		return store.FileRecord{}, err
 	}
 	return rec, nil
+}
+
+func normalizeShareMode(v string) (string, error) {
+	mode := strings.ToLower(strings.TrimSpace(v))
+	if mode == "" {
+		mode = "full"
+	}
+	switch mode {
+	case "private", "summary", "full":
+		return mode, nil
+	default:
+		return "", fmt.Errorf("invalid share mode %q (expected private|summary|full)", v)
+	}
 }

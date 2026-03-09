@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"net/http"
 	"os"
+	"strings"
 
 	"fileatlas/internal/config"
 	"fileatlas/internal/core"
@@ -31,10 +32,18 @@ type registerRequest struct {
 func Start(addr string) error {
 	mux := http.NewServeMux()
 	mux.HandleFunc("/v1/health", func(w http.ResponseWriter, r *http.Request) {
+		if r.Method != http.MethodGet {
+			writeErr(w, fmt.Errorf("method not allowed"), http.StatusMethodNotAllowed)
+			return
+		}
 		writeJSON(w, map[string]any{"ok": true, "service": "fileatlas"}, http.StatusOK)
 	})
 
 	mux.HandleFunc("/v1/status", func(w http.ResponseWriter, r *http.Request) {
+		if r.Method != http.MethodGet {
+			writeErr(w, fmt.Errorf("method not allowed"), http.StatusMethodNotAllowed)
+			return
+		}
 		cfg, err := config.Require()
 		if err != nil {
 			writeErr(w, err, http.StatusBadRequest)
@@ -62,6 +71,14 @@ func Start(addr string) error {
 		var req findRequest
 		if err := json.NewDecoder(r.Body).Decode(&req); err != nil {
 			writeErr(w, err, http.StatusBadRequest)
+			return
+		}
+		if req.Limit <= 0 {
+			req.Limit = 20
+		}
+		req.Query = strings.TrimSpace(req.Query)
+		if req.Query == "" {
+			writeErr(w, fmt.Errorf("query is required"), http.StatusBadRequest)
 			return
 		}
 		records, err := store.LoadRecords()
@@ -102,6 +119,9 @@ func Start(addr string) error {
 			}
 			roots = []string{home}
 		}
+		if len(roots) == 0 {
+			roots = cfg.ScanRoots
+		}
 		stats, total, err := core.RunAndPersistScan(cfg, roots)
 		if err != nil {
 			writeErr(w, err, http.StatusInternalServerError)
@@ -123,6 +143,10 @@ func Start(addr string) error {
 		var req registerRequest
 		if err := json.NewDecoder(r.Body).Decode(&req); err != nil {
 			writeErr(w, err, http.StatusBadRequest)
+			return
+		}
+		if req.Path == "" {
+			writeErr(w, fmt.Errorf("path is required"), http.StatusBadRequest)
 			return
 		}
 		rec, err := core.RegisterCreatedFile(cfg, req.Path, req.Agent, req.Share)
