@@ -111,15 +111,50 @@ Request body:
 { "path": "/abs/path/file.md", "agent": "openclaw", "share": "full" }
 ```
 
-## OpenClaw Integration
+## Agent Skills (Multi-Agent)
 
-Included scripts:
+FileAtlas ships with a small skill pack so multiple agent runtimes can use the same local search/index service.
+
+### Included skill files
+
+- `skills/openclaw-fileatlas-skill.md`
+- `skills/codex-fileatlas-skill.md`
+- `skills/generic-http-fileatlas-skill.md`
+
+### Runtime setup
+
+1. Start the API:
+
+```bash
+fileatlas serve
+```
+
+2. In your agent runtime, load one of the skill files above.
+3. Ensure the agent can call local endpoints on `http://127.0.0.1:4819`.
+
+### Example calls
+
+Find files:
+
+```bash
+curl -sS http://127.0.0.1:4819/v1/find \
+  -H 'Content-Type: application/json' \
+  -d '{"query":"meeting notes","limit":10}'
+```
+
+Register a newly created file:
+
+```bash
+curl -sS http://127.0.0.1:4819/v1/register-created \
+  -H 'Content-Type: application/json' \
+  -d '{"path":"/abs/path/new-file.md","agent":"openclaw","share":"full"}'
+```
+
+### OpenClaw helper scripts
 
 - `integrations/openclaw/find_file.sh`
 - `integrations/openclaw/register_created.sh`
 - `scripts/agent_write.sh`
-
-The skill contract for linked agents is documented in `skills/openclaw-fileatlas-skill.md`.
 
 ## Data Layout
 
@@ -159,3 +194,7 @@ go build ./cmd/fileatlas
 ## License
 
 MIT
+
+## Acknowledgment
+
+Parts of this project were created with AI assistance.
