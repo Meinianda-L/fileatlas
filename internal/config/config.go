@@ -26,14 +26,14 @@ type Config struct {
 }
 
 func HomeDir() (string, error) {
-	if v := os.Getenv("FILEATLAS_HOME"); v != "" {
+	if v := os.Getenv("FILECAIRN_HOME"); v != "" {
 		return v, nil
 	}
 	home, err := os.UserHomeDir()
 	if err != nil {
 		return "", err
 	}
-	return filepath.Join(home, ".fileatlas"), nil
+	return filepath.Join(home, ".filecairn"), nil
 }
 
 func ConfigPath() (string, error) {
@@ -107,5 +107,5 @@ func Require() (Config, error) {
 	if err == nil {
 		return cfg, nil
 	}
-	return Config{}, fmt.Errorf("config not found; run `fileatlas init` first")
+	return Config{}, fmt.Errorf("config not found; run `filecairn init` first")
 }

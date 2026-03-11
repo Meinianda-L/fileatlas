@@ -10,9 +10,9 @@ import (
 	"sync/atomic"
 	"time"
 
-	"fileatlas/internal/config"
-	"fileatlas/internal/store"
-	"fileatlas/internal/util"
+	"filecairn/internal/config"
+	"filecairn/internal/store"
+	"filecairn/internal/util"
 )
 
 type Stats struct {

@@ -9,12 +9,12 @@ import (
 	"path/filepath"
 	"strings"
 
-	"fileatlas/internal/api"
-	"fileatlas/internal/config"
-	"fileatlas/internal/core"
-	"fileatlas/internal/search"
-	"fileatlas/internal/store"
-	"fileatlas/internal/util"
+	"filecairn/internal/api"
+	"filecairn/internal/config"
+	"filecairn/internal/core"
+	"filecairn/internal/search"
+	"filecairn/internal/store"
+	"filecairn/internal/util"
 )
 
 func Run(args []string) error {
@@ -47,11 +47,11 @@ func Run(args []string) error {
 }
 
 func printHelp() {
-	fmt.Println("FileAtlas")
+	fmt.Println("FileCairn")
 	fmt.Println("Fast local index and search for your files")
 	fmt.Println("")
 	fmt.Println("Usage:")
-	fmt.Println("  fileatlas <command> [flags]")
+	fmt.Println("  filecairn <command> [flags]")
 	fmt.Println("")
 	fmt.Println("Commands:")
 	fmt.Println("  init             Interactive setup (providers, privacy, roots)")
@@ -63,10 +63,10 @@ func printHelp() {
 	fmt.Println("  content          Toggle content indexing (on|off)")
 	fmt.Println("")
 	fmt.Println("Examples:")
-	fmt.Println("  fileatlas init")
-	fmt.Println("  fileatlas scan --roots ~/Documents,~/Desktop")
-	fmt.Println("  fileatlas find \"quarterly budget\"")
-	fmt.Println("  fileatlas register-created --path /tmp/notes.md --agent openclaw --share full")
+	fmt.Println("  filecairn init")
+	fmt.Println("  filecairn scan --roots ~/Documents,~/Desktop")
+	fmt.Println("  filecairn find \"quarterly budget\"")
+	fmt.Println("  filecairn register-created --path /tmp/notes.md --agent openclaw --share full")
 }
 
 func runInit() error {
@@ -77,7 +77,7 @@ func runInit() error {
 	cfg := config.Default(home)
 	r := bufio.NewReader(os.Stdin)
 
-	fmt.Println("=== FileAtlas Setup ===")
+	fmt.Println("=== FileCairn Setup ===")
 	fmt.Println("Provider configuration")
 	fmt.Println("Add one or more model providers (endpoint + model + api key env var).")
 
@@ -195,7 +195,7 @@ func runScan(args []string) error {
 		roots = parseRoots(*rootsCSV)
 	}
 	if len(roots) == 0 {
-		return errors.New("no scan roots configured; run `fileatlas init` or pass --roots")
+		return errors.New("no scan roots configured; run `filecairn init` or pass --roots")
 	}
 
 	stats, total, err := core.RunAndPersistScan(cfg, roots)
@@ -233,14 +233,14 @@ func runFind(args []string) error {
 	}
 	query := strings.TrimSpace(strings.Join(fs.Args(), " "))
 	if query == "" {
-		return errors.New("query is required; usage: fileatlas find [--limit 20] <query>")
+		return errors.New("query is required; usage: filecairn find [--limit 20] <query>")
 	}
 	records, err := store.LoadRecords()
 	if err != nil {
 		return err
 	}
 	if len(records) == 0 {
-		fmt.Println("Index is empty. Run `fileatlas scan` first.")
+		fmt.Println("Index is empty. Run `filecairn scan` first.")
 		return nil
 	}
 	idx, err := store.LoadInverted()
@@ -304,7 +304,7 @@ func runStatus() error {
 	}
 	home, _ := config.HomeDir()
 	cfgPath, _ := config.ConfigPath()
-	fmt.Println("FileAtlas status")
+	fmt.Println("FileCairn status")
 	fmt.Printf("  config: %s\n", cfgPath)
 	fmt.Printf("  data dir: %s\n", home)
 	fmt.Printf("  roots: %s\n", strings.Join(cfg.ScanRoots, ", "))
@@ -316,7 +316,7 @@ func runStatus() error {
 
 func runContent(args []string) error {
 	if len(args) != 1 {
-		return errors.New("usage: fileatlas content on|off")
+		return errors.New("usage: filecairn content on|off")
 	}
 	cfg, err := config.Require()
 	if err != nil {
@@ -328,7 +328,7 @@ func runContent(args []string) error {
 	case "off":
 		cfg.ContentReadEnabled = false
 	default:
-		return errors.New("usage: fileatlas content on|off")
+		return errors.New("usage: filecairn content on|off")
 	}
 	if err := config.Save(cfg); err != nil {
 		return err

@@ -7,10 +7,10 @@ import (
 	"os"
 	"strings"
 
-	"fileatlas/internal/config"
-	"fileatlas/internal/core"
-	"fileatlas/internal/search"
-	"fileatlas/internal/store"
+	"filecairn/internal/config"
+	"filecairn/internal/core"
+	"filecairn/internal/search"
+	"filecairn/internal/store"
 )
 
 type findRequest struct {
@@ -36,7 +36,7 @@ func Start(addr string) error {
 			writeErr(w, fmt.Errorf("method not allowed"), http.StatusMethodNotAllowed)
 			return
 		}
-		writeJSON(w, map[string]any{"ok": true, "service": "fileatlas"}, http.StatusOK)
+		writeJSON(w, map[string]any{"ok": true, "service": "filecairn"}, http.StatusOK)
 	})
 
 	mux.HandleFunc("/v1/status", func(w http.ResponseWriter, r *http.Request) {
@@ -157,7 +157,7 @@ func Start(addr string) error {
 		writeJSON(w, map[string]any{"record": rec}, http.StatusOK)
 	})
 
-	fmt.Printf("FileAtlas API listening on http://%s\n", addr)
+	fmt.Printf("FileCairn API listening on http://%s\n", addr)
 	return http.ListenAndServe(addr, mux)
 }
 

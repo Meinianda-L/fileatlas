@@ -1,10 +1,10 @@
-# Codex FileAtlas Skill
+# Codex FileCairn Skill
 
 Use this skill when Codex needs to find local files quickly or register files it just wrote.
 
 ## Requirements
 
-1. `fileatlas serve` is running.
+1. `filecairn serve` is running.
 2. API base URL is `http://127.0.0.1:4819`.
 
 ## Supported actions

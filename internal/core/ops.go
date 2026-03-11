@@ -8,10 +8,10 @@ import (
 	"strings"
 	"time"
 
-	"fileatlas/internal/config"
-	"fileatlas/internal/indexer"
-	"fileatlas/internal/store"
-	"fileatlas/internal/util"
+	"filecairn/internal/config"
+	"filecairn/internal/indexer"
+	"filecairn/internal/store"
+	"filecairn/internal/util"
 )
 
 func RunAndPersistScan(cfg config.Config, roots []string) (indexer.Stats, int, error) {

@@ -8,7 +8,7 @@ import (
 	"sort"
 	"time"
 
-	"fileatlas/internal/config"
+	"filecairn/internal/config"
 )
 
 type FileRecord struct {

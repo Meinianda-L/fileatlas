@@ -13,9 +13,9 @@ SHARE="${3:-full}"
 mkdir -p "$(dirname "$TARGET")"
 cat > "$TARGET"
 
-if command -v fileatlas >/dev/null 2>&1; then
-  fileatlas register-created --path "$TARGET" --agent "$AGENT" --share "$SHARE" >/dev/null
+if command -v filecairn >/dev/null 2>&1; then
+  filecairn register-created --path "$TARGET" --agent "$AGENT" --share "$SHARE" >/dev/null
   echo "Wrote + registered: $TARGET"
 else
-  echo "Wrote file but fileatlas command not found in PATH: $TARGET"
+  echo "Wrote file but filecairn command not found in PATH: $TARGET"
 fi

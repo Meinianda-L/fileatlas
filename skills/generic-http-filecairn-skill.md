@@ -1,10 +1,10 @@
-# Generic HTTP Agent Skill (FileAtlas)
+# Generic HTTP Agent Skill (FileCairn)
 
 Use this skill for any model runtime that can send local HTTP requests.
 
 ## Requirements
 
-1. Start FileAtlas API: `fileatlas serve`
+1. Start FileCairn API: `filecairn serve`
 2. Set base URL: `http://127.0.0.1:4819`
 
 ## API operations

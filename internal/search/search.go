@@ -6,8 +6,8 @@ import (
 	"strings"
 	"time"
 
-	"fileatlas/internal/store"
-	"fileatlas/internal/util"
+	"filecairn/internal/store"
+	"filecairn/internal/util"
 )
 
 type Result struct {

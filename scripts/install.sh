@@ -9,10 +9,10 @@ mkdir -p "$BIN_DIR"
 mkdir -p "$TARGET_DIR"
 
 cd "$ROOT_DIR"
-go build -o "$BIN_DIR/fileatlas" ./cmd/fileatlas
-cp "$BIN_DIR/fileatlas" "$TARGET_DIR/fileatlas"
-chmod +x "$TARGET_DIR/fileatlas"
+go build -o "$BIN_DIR/filecairn" ./cmd/filecairn
+cp "$BIN_DIR/filecairn" "$TARGET_DIR/filecairn"
+chmod +x "$TARGET_DIR/filecairn"
 
-echo "Installed: $TARGET_DIR/fileatlas"
+echo "Installed: $TARGET_DIR/filecairn"
 echo "If needed, add ~/.local/bin to PATH:"
 echo '  export PATH="$HOME/.local/bin:$PATH"'

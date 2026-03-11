@@ -1,10 +1,10 @@
-# OpenClaw FileAtlas Skill
+# OpenClaw FileCairn Skill
 
 Use this skill when OpenClaw must find local files or register newly created files.
 
 ## Required runtime
 
-1. `fileatlas serve` must be running.
+1. `filecairn serve` must be running.
 2. API default address: `http://127.0.0.1:4819`.
 
 ## Operations

@@ -4,7 +4,7 @@ import (
 	"testing"
 	"time"
 
-	"fileatlas/internal/store"
+	"filecairn/internal/store"
 )
 
 func TestFindRanksRecentMatchHigher(t *testing.T) {

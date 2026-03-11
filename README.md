@@ -1,12 +1,12 @@
-# FileAtlas
+# FileCairn
 
-FileAtlas is a local-first file indexer and search engine for personal workspaces.
+FileCairn is a local-first file indexer and search engine for personal workspaces.
 It scans selected folders, builds an inverted index, and exposes both a CLI and a local HTTP API so tools and agents can find files quickly.
 
 ## Why This Project Exists
 
 Desktop search is often either too shallow (filename-only) or too heavy (cloud sync, background daemons, complicated setup).
-FileAtlas keeps the workflow simple:
+FileCairn keeps the workflow simple:
 
 - run on your machine
 - choose scan roots explicitly
@@ -35,11 +35,11 @@ cd filecairn
 ### Option 2: Build without installing
 
 ```bash
-go build -o ./bin/fileatlas ./cmd/fileatlas
-./bin/fileatlas help
+go build -o ./bin/filecairn ./cmd/filecairn
+./bin/filecairn help
 ```
 
-If `fileatlas` is not found after install, add this to your shell profile:
+If `filecairn` is not found after install, add this to your shell profile:
 
 ```bash
 export PATH="$HOME/.local/bin:$PATH"
@@ -48,9 +48,9 @@ export PATH="$HOME/.local/bin:$PATH"
 ## Quick Start
 
 ```bash
-fileatlas init
-fileatlas scan
-fileatlas find "meeting notes"
+filecairn init
+filecairn scan
+filecairn find "meeting notes"
 ```
 
 `init` walks through:
@@ -63,13 +63,13 @@ fileatlas find "meeting notes"
 ## CLI Reference
 
 ```bash
-fileatlas init
-fileatlas scan [--all] [--roots /a,/b]
-fileatlas find [--limit 20] <query>
-fileatlas register-created --path <file> --agent <name> [--share private|summary|full]
-fileatlas serve [--addr 127.0.0.1:4819]
-fileatlas status
-fileatlas content on|off
+filecairn init
+filecairn scan [--all] [--roots /a,/b]
+filecairn find [--limit 20] <query>
+filecairn register-created --path <file> --agent <name> [--share private|summary|full]
+filecairn serve [--addr 127.0.0.1:4819]
+filecairn status
+filecairn content on|off
 ```
 
 ## API Reference
@@ -77,7 +77,7 @@ fileatlas content on|off
 Start the local API server:
 
 ```bash
-fileatlas serve
+filecairn serve
 ```
 
 ### `GET /v1/health`
@@ -113,20 +113,20 @@ Request body:
 
 ## Agent Skills (Multi-Agent)
 
-FileAtlas ships with a small skill pack so multiple agent runtimes can use the same local search/index service.
+FileCairn ships with a small skill pack so multiple agent runtimes can use the same local search/index service.
 
 ### Included skill files
 
-- `skills/openclaw-fileatlas-skill.md`
-- `skills/codex-fileatlas-skill.md`
-- `skills/generic-http-fileatlas-skill.md`
+- `skills/openclaw-filecairn-skill.md`
+- `skills/codex-filecairn-skill.md`
+- `skills/generic-http-filecairn-skill.md`
 
 ### Runtime setup
 
 1. Start the API:
 
 ```bash
-fileatlas serve
+filecairn serve
 ```
 
 2. In your agent runtime, load one of the skill files above.
@@ -158,7 +158,7 @@ curl -sS http://127.0.0.1:4819/v1/register-created \
 
 ## Data Layout
 
-By default, data is stored in `~/.fileatlas` (or `$FILEATLAS_HOME`):
+By default, data is stored in `~/.filecairn` (or `$FILECAIRN_HOME`):
 
 - `config.json` - runtime config
 - `files.json` - current file records
@@ -181,7 +181,7 @@ See `docs/ALGORITHMS.md` for indexing and ranking details.
 ```bash
 go fmt ./...
 go test ./...
-go build ./cmd/fileatlas
+go build ./cmd/filecairn
 ```
 
 ## Roadmap

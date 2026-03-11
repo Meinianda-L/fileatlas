@@ -4,7 +4,7 @@ import (
 	"fmt"
 	"os"
 
-	"fileatlas/internal/app"
+	"filecairn/internal/app"
 )
 
 func main() {

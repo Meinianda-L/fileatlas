@@ -1,5 +1,5 @@
-APP := fileatlas
-CMD := ./cmd/fileatlas
+APP := filecairn
+CMD := ./cmd/filecairn
 BIN_DIR := ./bin
 OUT := $(BIN_DIR)/$(APP)
 

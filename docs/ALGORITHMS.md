@@ -40,4 +40,4 @@ Where:
 
 - Global content reading is OFF by default.
 - If OFF, index uses filename/path only.
-- Content indexing requires explicit user enable (`fileatlas content on`) or file-level `full`.
+- Content indexing requires explicit user enable (`filecairn content on`) or file-level `full`.
