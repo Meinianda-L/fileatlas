@@ -27,8 +27,8 @@ FileAtlas keeps the workflow simple:
 ### Option 1: Build and install locally
 
 ```bash
-git clone https://github.com/Meinianda-L/fileatlas.git
-cd fileatlas
+git clone https://github.com/Meinianda-L/filecairn.git
+cd filecairn
 ./scripts/install.sh
 ```
 
